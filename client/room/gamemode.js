@@ -1,90 +1,232 @@
-import * as room from 'pixel_combats/room';
-import * as teams from './default_teams.js';
+PixelCombats.ApiTGKoder:
+import { DisplayValueHeader, Color } from 'pixel_combats/basic';
+import { Game, Players, Inventory, LeaderBoard, BuildBlocksSet, Teams, Damage, BreackGraph, Ui, Properties, GameMode, Spawns, Timers, TeamsBalancer, Build, AreaPlayerTriggerService } from 'pixel_combats/room';
 
-// разрешает все что можно для строительства
-function set_inventory() {
-    const context = room.Inventory.GetContext();
-    context.Main.Value = false;
-    context.Secondary.Value = false;
-    context.Melee.Value = true;
-    context.Explosive.Value = false;
-    context.Build.Value = true;
-    context.BuildInfinity.Value = true;
-}
+Damage.GetContext().DamageOut.Value = true;
+Damage.GetContext().FriendlyFire.Value = true;
+BreackGraph.OnlyPlayerBlocksDmg = true;
 
-function set_build_settings() {
-    const context = room.Build.GetContext();
-    // прочие опции
-    context.Pipette.Value = true;
-    context.BalkLenChange.Value = true;
-    context.SetSkyEnable.Value = true;
-    context.GenMapEnable.Value = true;
-    context.ChangeCameraPointsEnable.Value = true;
-    context.QuadChangeEnable.Value = true;
-    context.BuildModeEnable.Value = true;
-    context.CollapseChangeEnable.Value = true;
-    context.RenameMapEnable.Value = true;
-    context.ChangeMapAuthorsEnable.Value = true;
-    context.LoadMapEnable.Value = true;
-    context.ChangeSpawnsEnable.Value = true;
-    context.BlocksSet.Value = room.BuildBlocksSet.AllClear; // делаем возможность строительства всеми блоками
-}
+Teams.Add("Blue", "<b>Игроки</b>", new Color(0, 0, 1, 0));
+Teams.Add("Red", "<b>Админы</b>", new Color(0, 0, 0, 0));
+var admsTeam = Teams.Get("Red");
+var playersTeam = Teams.Get("Blue");
+Teams.Get("Blue").Spawns.SpawnPointsGroups.Add(1);
+Teams.Get("Red").Spawns.SpawnPointsGroups.Add(2);
+playersTeam.Build.BlocksSet.Value = BuildBlocksSet.Blue;
+admsTeam.Build.BlocksSet.Value = BuildBlocksSet.AllClear;
 
-// задает в контекст инвентаря пустой инвентарь
-function set_empty_inventory(inventory) {
-    inventory.Main.Value = false;
-    inventory.Secondary.Value = false;
-    inventory.Melee.Value = false;
-    inventory.Explosive.Value = false;
-    inventory.Build.Value = false;
-}
+Teams.Get("Blue").Properties.Get("Deaths").Value = "<b><i><color=Yellow>новый режим от</a> <color=lime>Лунатика!!!</a></i> <color=Red>Flare</a></b>";
+Teams.Get("Red").Properties.Get("Deaths").Value = "<b><i><color=Yellow></a> <color=Orange>Лунатик!!!</a></i> <color=Lime>[2.0.1]</a></b>";
 
-// задает опции режима мир, выбранные при создании комнаты
-export function apply_room_options() {
-    const gameModeParameters = room.GameMode.Parameters;
+LeaderBoard.PlayerLeaderBoardValues = [
+  new DisplayValueHeader("Kills", "<b>Киллы</b>", "<b>Киллы</b>"),
+  new DisplayValueHeader("Deaths", "<b>Смерти</b>", "<b>Смерти</b>"),
+  new DisplayValueHeader("Scores", "<b>Очки</b>", "<b>Очки</b>"),
+  new DisplayValueHeader("Статус", "<b>Статус</b>", "<b>Статус</b>")
+];
 
-    // опции строительства
-    const buildContext = room.Build.GetContext();
-    buildContext.FloodFill.Value = gameModeParameters.GetBool("FloodFill");
-    buildContext.FillQuad.Value = gameModeParameters.GetBool("FillQuad");
-    buildContext.RemoveQuad.Value = gameModeParameters.GetBool("RemoveQuad");
-    buildContext.FlyEnable.Value = gameModeParameters.GetBool("Fly");
+LeaderBoard.PlayersWeightGetter.Set(function(player) {
+  return player.Properties.Get("Scores").Value;
+});
 
-    // прочие опции
-    room.Damage.GetContext().DamageOut.Value = gameModeParameters.GetBool("Damage");
-    room.BreackGraph.OnlyPlayerBlocksDmg = gameModeParameters.GetBool("PartialDesruction");
-    room.BreackGraph.WeakBlocks = gameModeParameters.GetBool("LoosenBlocks");
-}
+Ui.GetContext().TeamProp1.Value = { Team: "Blue", Prop: "Deaths" };
+Ui.GetContext().TeamProp2.Value = { Team: "Red", Prop: "Deaths" };
 
-// задает настройки режима мир
-export function configure() {
-    room.Properties.GetContext().GameModeName.Value = "GameModes/Peace";// задаем название режима
-    room.Ui.GetContext().Hint.Value = "Hint/BuildBase";// выводим подсказку
-    room.Ui.GetContext().QuadsCount.Value = true;// выводим количество квадов на карте
-    room.BreackGraph.BreackAll = true; // делаем так, чтобы можно было сломать любой блок
-    room.Spawns.GetContext().RespawnTime.Value = 0; // убираем таймер респавна
-    set_build_settings();
-    set_inventory();
-    apply_room_options();
-}
+Teams.OnRequestJoinTeam.Add(function(player, team){
+  if (GameMode.Parameters.GetBool('hello')) { 
+    player.Ui.Hint.Value = Привет ${player.NickName}!; 
+  }
+  function getadm(player) {
+    player.inventory.Main.Value = true;
+    player.inventory.MainInfinity.Value = true;
+    player.inventory.Secondary.Value = true;
+    player.inventory.SecondaryInfinity.Value = true;
+    player.inventory.Melee.Value = true;
+    player.inventory.Explosive.Value = true;
+    player.inventory.ExplosiveInfinity.Value = true;
+    player.inventory.Build.Value = true;
+    player.inventory.BuildInfinity.Value = true;
+    player.contextedProperties.SkinType.Value = 1;
+    player.Properties.Get("admin").Value = 1;
+    player.Build.Pipette.Value = true;
+    player.Build.FlyEnable.Value = true;
+    player.Build.BalkLenChange.Value = true;
+    player.Build.BuildRangeEnable.Value = true;
+    player.Build.BuildModeEnable.Value = true;
+    player.Build.RemoveQuad.Value = true;
+    player.Build.FillQuad.Value = true;
+    player.Build.FloodFill.Value = true;
+    player.Build.ChangeSpawnsEnable.Value = true;
+    player.Build.LoadMapEnable.Value = true;
+    player.Build.ChangeMapAuthorsEnable.Value = true;
+    player.Build.GenMapEnable.Value = true;
+    player.Build.ChangeCameraPointsEnable.Value = true;
+    player.Build.CollapseChangeEnable.Value = true;
+    player.Build.QuadChangeEnable.Value = true;
+    player.Build.SetSkyEnable.Value = true;
+    player.Build.BlocksSet.Value = BuildBlocksSet.AllClear;
+    player.Damage.DamageIn.Value = false;
+  }
+  function getvip1(player) {
+    player.inventory.Main.Value = true;
+    player.inventory.MainInfinity.Value = true;
+    player.inventory.Secondary.Value = true; 
+    player.inventory.SecondaryInfinity.Value = true;
+    player.inventory.Melee.Value = true; 
+    player.inventory.Explosive.Value = true;
+    player.inventory.ExplosiveInfinity.Value = true;
+    player.contextedProperties.MaxHp.Value = 1000;
+  }
+  function getvip2(player)
+    player.inventory.Main.Value = true;
+    player.inventory.MainInfinity.Value = true;
+    player.inventory.Secondary.Value = true;
+    player.inventory.SecondaryInfinity.Value = true;
+    player.inventory.Melee.Value = true;
 
-export function create_teams() {
-    // создаем команды
-    const roomParameters = room.GameMode.Parameters;
-    const hasRedTeam = roomParameters.GetBool("RedTeam");
-    const hasBlueTeam = roomParameters.GetBool("BlueTeam");
-    if (hasRedTeam || !hasRedTeam && !hasBlueTeam) {
-        teams.create_team_red();
-    }
-    if (hasBlueTeam || !hasRedTeam && !hasBlueTeam) {
-        const blueTeam = teams.create_team_blue();
-        if (roomParameters.GetBool("BlueHasNothing")) {
-            set_empty_inventory(blueTeam.Inventory);
-        }
-    }
+player.inventory.Explosive.Value = true;
+    player.inventory.ExplosiveInfinity.Value = true;
+    player.contextedProperties.MaxHp.Value = 5000;
+  }
+  function getamoder(player) {
+  player.inventory.Main.Value = true;
+  player.inventory.MainInfinity.Value = true;
+  player.inventory.Secondary.Value = true;
+  player.inventory.SecondaryInfinity.Value = true;
+  player.inventory.Melee.Value = true;
+  player.inventory.Explosive.Value = true;
+  player.inventory.ExplosiveInfinity.Value = true;
+  player.inventory.Build.Value = true;
+  player.inventory.BuildInfinity.Value = true;
+  player.contextedProperties.SkinType.Value = 1;
+  player.contextedProperties.MaxHp.Value = 50000000000;
+  player.Build.Pipette.Value = true;
+  player.Build.FlyEnable.Value = true;
+  player.Build.BuildRangeEnable.Value = true;
+  player.Build.BuildModeEnable.Value = true;
+  player.Build.BalkLenChange.Value = true;
+  player.Build.CollapseChangeEnable.Value = true;
+  }
+  function getvip3(player) {
+    player.inventory.Main.Value = true;
+    player.inventory.MainInfinity.Value = true;
+    player.inventory.Secondary.Value = true;
+    player.inventory.SecondaryInfinity.Value = true;
+    player.inventory.Melee.Value = true;
+    player.inventory.Explosive.Value = true;
+    player.inventory.ExplosiveInfinity.Value = true;
+    player.inventory.Build.Value = true;
+    player.Build.FlyEnable.Value = true;
+    player.contextedProperties.SkinType.Value = 2;
+    player.contextedProperties.MaxHp.Value = 1000000;
+  }
+  if (player.id == "16355958893E0F11"  player.id == "2827CD16AE7CC982") {
+    Teams.Get("Red").Add(player);
+  } else {
+    Teams.Get("Blue").Add(player);
+  }
+  if (GameMode.Parameters.GetBool("miniHp")) {
+    player.contextedProperties.MaxHp.Value = 50;
+  }
+  if (GameMode.Parameters.GetBool("bigHp")) {
+    player.contextedProperties.MaxHp.Value = 150;
+  }
+  // Для Кирилла
+  if (player.id == "16355958893E0F11) {
+    getadm(player);
+  }
+  // Для Факторик 
+  if (player.id == "2827CD16AE7CC982") {
+    getadm(player);
+  }
+   // Для Бандит. Гл. Админ
+  if (player.id == "Е730023519401808") {
+    getadm(player);
+  }
+  if (player.id == "16355958893E0F11) {
+  player.Properties.Get("Статус").Value = "<b><i><color=Red>ГЛ.АДМИН</a></i></b>";
+  }
+  if (player.id == "2827CD16AE7CC982") {
+    player.Properties.Get("Статус").Value = "<b><i><color=Red>АДМИН</color></i></b>";
+  }
+  if (player.id == "Е730023519401808") {
+    player.Properties.Get("Статус").Value = "<b><i><color=Red>АДМИН</color></i></b>";
+  }
+  if (player.id == "пусто") {
+    player.Properties.Get("Статус").Value = "<b><i><color=Lime>МОДЕРАТОР</a></i></b>";
+  }
+  if (player.id == "") {
+    player.Properties.Get("Статус").Value = "<b><i><color=yellow>VIP</color> Игрок</i></b>";
+  }
+  } else {
+    player.Properties.Get("Статус").Value = "<b><i>Игрок</i></b>";
+  }
+});
 
-    // по запросу на вход в команду - кидаем игрока в команду
-    room.Teams.OnRequestJoinTeam.Add(function (player, team) { team.Add(player); });
-    // если игрок сменил команду или выбрал ее, то происходит спавн игрока
-    room.Teams.OnPlayerChangeTeam.Add(function (player) { player.Spawns.Spawn() });
-     }
+Teams.OnPlayerChangeTeam.Add(function(player){ 
+player.Spawns.Spawn();
+player.PopUp("Думаю будет весело)");
+});
+
+var immortalityTimerName = "immortality";
+Spawns.GetContext().OnSpawn.Add(function(player){
+  player.Properties.Immortality.Value = true;
+  timer = player.Timers.Get(immortalityTimerName).Restart(5);
+});
+Timers.OnPlayerTimer.Add(function(timer){
+  if (timer.Id != immortalityTimerName) return;
+  timer.Player.Properties.Immortality.Value = false;
+});
+
+Damage.OnDeath.Add(function(player) {
+  ++player.Properties.Deaths.Value;
+});
+Damage.OnDamage.Add(function(player, damaged, damage) {
+  if (GameMode.Parameters.GetBool("scoresOnDamage")) {
+    if (player.id != damaged.id) player.Properties.Scores.Value += Math.ceil(damage);
+  }
+});
+/* 
+Damage.OnKill.Add(function(player, killed) {
+  if (player.id !== killed.id) { 
+    ++player.Properties.Kills.Value;
+    player.Properties.Scores.Value += 350;
+  }
+}); 
+*/
+
+var inventory = Inventory.GetContext();
+inventory.Main.Value = false;
+inventory.Secondary.Value = false;
+inventory.Melee.Value = false;
+inventory.Explosive.Value = false;
+inventory.Build.Value = false;
+inventory.BuildInfinity.Value = false;
+
+Spawns.GetContext().RespawnTime.Value = 0;
+
+
+
+var AdminkaTrigger = AreaPlayerTriggerService.Get("Админка")
+AdminkaTrigger.Tags = ["Админка"];
+AdminkaTrigger.Enable = true;
+AdminkaTrigger.OnEnter.Add(function(player){
+  if (enableAdminsZones) {
+  player.inventory.Main.Value = true;
+  player.inventory.MainInfinity.Value = true;
+  player.inventory.Secondary.Value = true;
+  player.inventory.SecondaryInfinity.Value = true;
+
+player.inventory.Explosive.Value = true;
+  player.inventory.ExplosiveInfinity.Value = true;
+  player.inventory.Melee.Value = true;
+  player.inventory.Build.Value = true;
+  player.inventory.BuildInfinity.Value = true;
+  player.Build.Pipette.Value = true;
+  player.Build.FlyEnable.Value = true;
+  player.Build.BuildRangeEnable.Value = true;
+  player.Build.BuildModeEnable.Value = true;
+  player.Build.BalkLenChange.Value = true;
+  player.Build.CollapseChangeEnable.Value = true;
+  player.Spawns.Spawn();
+  player.Ui.Hint.Value = Ты получил админку;
