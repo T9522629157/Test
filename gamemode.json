@@ -1,15 +1,12 @@
 {
-  "Name": "<b><i><color=Blue>ТЕСТ</a>от ЛУНАТИКА!!!</i></b>",
-  "Description": "<b><i>ТЕСТ</i></b>",
-  "StartClientVersion": 510,
-  "MapFilter": {
-    "IsBlank": false,
-    "HasParcourEnd": false
-  },
+  "ApiVersion": 2,
+  "Name": "Test1",
+  "Description": "Test",
+  "StartClientVersion": 532,
   "MapLists": [
     {
-      "MapListId": 8401,
-      "Name": "ТЕСТ ОТ <color=Line>ЛУНАТИКА!!!</a>"
+      "MapListId": 324,
+      "Name": "Официальные карты"
     }
   ],
   "Parameters": {
@@ -25,6 +22,16 @@
       {
         "Name": "LoosenBlocks",
         "DisplayName": "GmParams/LoosenBlocks"
+      },
+      {
+        "Name": "RedTeam",
+        "DisplayName": "Teams/Red",
+        "Default": true
+      },
+      {
+        "Name": "BlueTeam",
+        "DisplayName": "Teams/Blue",
+        "Default": true
       },
       {
         "Name": "BlueHasNothing",
