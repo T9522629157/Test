@@ -1,47 +1,50 @@
 {
-  "ApiVersion": 2,
-  "Name": "<b><i><color=Lime>М</a><color=Red>Т</a><a>Р</a> (API 2.0)</i></b>",
-  "Description": "<b><i>Мирный режим,но с оружиями <color=Red>(и бесконечными патронами на оружия)</a> и с функциями: <a>РЕДАКТОРА!!!</a></i></b>",
-  "StartClientVersion": 532,
+  "Name": "<b><i><color=Blue>ТЕСТ</a>от ЛУНАТИКА!!!</i></b>",
+  "Description": "<b><i>ТЕСТ</i></b>",
+  "StartClientVersion": 510,
+  "MapFilter": {
+    "IsBlank": false,
+    "HasParcourEnd": false
+  },
   "MapLists": [
     {
-      "MapListId": 324,
-      "Name": "Официальные карты"
+      "MapListId": 8401,
+      "Name": "ТЕСТ ОТ <color=Line>ЛУНАТИКА!!!</a>"
     }
   ],
   "Parameters": {
     "Bool": [
       {
         "Name": "Damage",
-        "DisplayName": "<b><i><color=Red>УРОН</a></i></b>"
-      },
-      {
-        "Name": "FriendlyFire",
-        "DisplayName": "<b><i>УРОН ПО <color=Red>СВОИМ</a></i></b>"
+        "DisplayName": "GmParams/Damage"
       },
       {
         "Name": "PartialDesruction",
-        "DisplayName": "<b><i>ЧАСТИЧНОЕ <color=Red>РАЗРУШЕНИЕ</a></i></b>"
+        "DisplayName": "GmParams/PartialDesruction"
       },
       {
-        "Name": "WeakBlocks",
-        "DisplayName": "<b><i>СЛАБЫЕ БЛОКИ</i></b>"
-      },
-      {
-        "Name": "RedTeam",
-        "DisplayName": "<b><i>КОМАНДА <color=Red>КРАСНАЯ</a></i></b>",
-      },
-      {
-        "Name": "BlueTeam",
-        "DisplayName": "<b><i>КОМАНДА <color=Blue>СИНИЯ</a></i></b>",
+        "Name": "LoosenBlocks",
+        "DisplayName": "GmParams/LoosenBlocks"
       },
       {
         "Name": "BlueHasNothing",
-        "DisplayName": "<b><i><color=Red>ПУСТОЙ</a> ИНВЕНТАРЬ КОМАНДЫ:<color=Blue>СИНИХ</a></i></b>"
+        "DisplayName": "GmParams/BlueHasNothing"
+      },
+      {
+        "Name": "FloodFill",
+        "DisplayName": "GmParams/FloodFill"
+      },
+      {
+        "Name": "FillQuad",
+        "DisplayName": "GmParams/FillQuad"
+      },
+      {
+        "Name": "RemoveQuad",
+        "DisplayName": "GmParams/RemoveQuad"
       },
       {
         "Name": "Fly",
-        "DisplayName": "<b><i>ПОЛЁТ</i></b>",
+        "DisplayName": "GmParams/Fly",
         "Default": true
       }
     ]
